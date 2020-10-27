@@ -1,13 +1,13 @@
 package tunnel
 
 import (
-        "math/rand"
-        "time"
-        "fmt"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ec2instanceconnect"
+	"math/rand"
+	"time"
 )
 
 type Instance struct {
@@ -19,8 +19,8 @@ func getJumpInstance() (*Instance, error) {
 	s := session.Must(session.NewSession())
 	svc := ec2.New(s)
 
-        // autodiscover running instances with the TuneJumpHost tag
-        // XXX: ignores pagination for now - we don't expect many instances
+	// autodiscover running instances with the TuneJumpHost tag
+	// XXX: ignores pagination for now - we don't expect many instances
 	out, err := svc.DescribeInstances(&ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			{
@@ -36,15 +36,15 @@ func getJumpInstance() (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-        if len(out.Reservations) == 0 {
+	if len(out.Reservations) == 0 {
 		return nil, fmt.Errorf("Could not find any active jump hosts")
-        }
+	}
 
-        // pick a random instance
-        // XXX: ignores multiple instances per reservation - we only expect one
-        rand.Seed(time.Now().UnixNano())
-        randIdx := rand.Intn(len(out.Reservations))
-        instance := out.Reservations[randIdx].Instances[0]
+	// pick a random instance
+	// XXX: ignores multiple instances per reservation - we only expect one
+	rand.Seed(time.Now().UnixNano())
+	randIdx := rand.Intn(len(out.Reservations))
+	instance := out.Reservations[randIdx].Instances[0]
 
 	return &Instance{
 		ID:               *instance.InstanceId,
@@ -56,7 +56,7 @@ func sendKey(publicKey []byte, instanceId string, availabilityZone string) error
 	s := session.Must(session.NewSession())
 	svc := ec2instanceconnect.New(s)
 
-        // send the public key to the EC2 instance, where it's valid for 60s
+	// send the public key to the EC2 instance, where it's valid for 60s
 	out, err := svc.SendSSHPublicKey(&ec2instanceconnect.SendSSHPublicKeyInput{
 		AvailabilityZone: aws.String(availabilityZone),
 		InstanceId:       aws.String(instanceId),
@@ -65,10 +65,10 @@ func sendKey(publicKey []byte, instanceId string, availabilityZone string) error
 	})
 	if err != nil {
 		return err
-        }
-        if out.Success == nil || !*out.Success {
+	}
+	if out.Success == nil || !*out.Success {
 		return fmt.Errorf("Failed to send public key to %s", instanceId)
 	}
 
-        return nil
+	return nil
 }
