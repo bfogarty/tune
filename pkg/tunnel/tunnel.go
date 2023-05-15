@@ -81,7 +81,7 @@ func (t *Tunnel) dial() error {
 	log.Printf("Found jump instance: %s", instance.ID)
 
 	// create an ephemeral SSH key valid for 60s
-	log.Printf("Generating ephemeral RSA key...")
+	log.Printf("Generating ephemeral ED25519 key...")
 	privateKey, publicKey, err := generateKeyPair()
 	if err != nil {
 		return err
