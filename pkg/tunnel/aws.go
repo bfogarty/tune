@@ -15,8 +15,10 @@ type Instance struct {
 	AvailabilityZone string
 }
 
-func getJumpInstance() (*Instance, error) {
-	s := session.Must(session.NewSession())
+func getJumpInstance(region string) (*Instance, error) {
+	s := session.Must(session.NewSession(&aws.Config{
+		Region: aws.String(region),
+	}))
 	svc := ec2.New(s)
 
 	// autodiscover running instances with the TuneJumpHost tag
@@ -52,8 +54,10 @@ func getJumpInstance() (*Instance, error) {
 	}, nil
 }
 
-func sendKey(publicKey []byte, instanceId string, availabilityZone string) error {
-	s := session.Must(session.NewSession())
+func sendKey(publicKey []byte, instanceId string, availabilityZone string, region string) error {
+	s := session.Must(session.NewSession(&aws.Config{
+		Region: aws.String(region),
+	}))
 	svc := ec2instanceconnect.New(s)
 
 	// send the public key to the EC2 instance, where it's valid for 60s
