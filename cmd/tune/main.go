@@ -21,7 +21,7 @@ Options:
   --localPort=<port>  The local port to use.`
 
 	// parse arguments
-	opts, err := docopt.ParseArgs(usage, os.Args[1:], "0.1.1")
+	opts, err := docopt.ParseArgs(usage, os.Args[1:], "0.2.0")
 	checkErr(err)
 
 	remoteHost, err := opts.String("<host>")
