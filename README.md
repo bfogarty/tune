@@ -27,6 +27,6 @@ The following forwards `localhost:5433` to `my.db.com:5432` inside the VPC.
 
 ### Using an assumed IAM Role
 
-Tune respects AWS credentials set in `~/.aws/credentials` as well as environment variables such as `AWS_PROFILE`. In order to support authenticating as an assumed IAM role, the environment variable `AWS_SDK_LOAD_CONFIG` must be set.
+Tune respects AWS credentials set in `~/.aws/credentials` as well as environment variables such as `AWS_PROFILE`.
 
-    AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=qa tune to my.db.com 5432 --localPort 5433
+    AWS_PROFILE=qa tune to my.db.com 5432 --localPort 5433

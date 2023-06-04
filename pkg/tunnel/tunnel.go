@@ -16,6 +16,7 @@ type Tunnel struct {
 	LocalPort  int
 	RemotePort int
 	RemoteHost string
+	AwsRegion  string
 
 	KeepAliveInterval time.Duration
 
@@ -23,11 +24,12 @@ type Tunnel struct {
 	target *ssh.Client
 }
 
-func New(remoteHost string, localPort int, remotePort int) (*Tunnel, error) {
+func New(remoteHost string, localPort int, remotePort int, awsRegion string) (*Tunnel, error) {
 	return &Tunnel{
 		LocalPort:  localPort,
 		RemotePort: remotePort,
 		RemoteHost: remoteHost,
+		AwsRegion:  awsRegion,
 
 		KeepAliveInterval: 10 * time.Second,
 	}, nil
@@ -74,7 +76,7 @@ func (t *Tunnel) Start() error {
 
 func (t *Tunnel) dial() error {
 	// get a random jump instance
-	instance, err := getJumpInstance()
+	instance, err := getJumpInstance(t.AwsRegion)
 	if err != nil {
 		return err
 	}
@@ -88,7 +90,7 @@ func (t *Tunnel) dial() error {
 	}
 
 	log.Printf("Sending ephemeral RSA key to %s...", instance.ID)
-	err = sendKey(publicKey, instance.ID, instance.AvailabilityZone)
+	err = sendKey(publicKey, instance.ID, instance.AvailabilityZone, t.AwsRegion)
 	if err != nil {
 		return err
 	}
